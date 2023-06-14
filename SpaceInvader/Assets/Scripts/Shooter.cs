@@ -7,12 +7,14 @@ using Random = UnityEngine.Random;
 
 public class Shooter : MonoBehaviour
 {
-    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private GameObject[] projectilePrefab;
+    //[SerializeField] private GameObject projectilePrefab2;
     [SerializeField] private float projectileSpeed = 10f;
     [SerializeField] private float projectileLifeTime = 5f;
     [SerializeField] private float baseFiringRate = 0.2f;
     [SerializeField] private float firingRateVariance = 0;
     [SerializeField] private float minimumFiringRate = 0.1f;
+    [SerializeField] private Vector3 AddToChangePosition;
     [SerializeField] private bool useAI;
     
     [HideInInspector]
@@ -56,16 +58,24 @@ public class Shooter : MonoBehaviour
     {
         while (true)
         {
-            GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-
-            Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            Vector3 addPosition = new(-1, 0, 0);
+            for (int i = 0; i < projectilePrefab.Length; i++)
             {
-                rb.velocity = moveDirection * projectileSpeed;
-            }
-            
-            Destroy(projectile, projectileLifeTime);
 
+                GameObject[] projectile = new GameObject[projectilePrefab.Length];
+                projectile[i] = Instantiate(projectilePrefab[i], transform.position + addPosition, Quaternion.identity);
+                //GameObject projectile2 = Instantiate(projectilePrefab2, transform.position + new Vector3(5, 0, 0), Quaternion.identity);
+                Rigidbody2D[] rb = new Rigidbody2D[projectilePrefab.Length];
+                rb[i] = projectile[i].GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    rb[i].velocity = moveDirection * projectileSpeed;
+                }
+
+                Destroy(projectile[i], projectileLifeTime);
+                addPosition += new Vector3(2, 0, 0);
+                //Destroy(projectile2, projectileLifeTime);
+            }
             float timeToNextProjectile =
                 Random.Range(baseFiringRate - firingRateVariance, baseFiringRate + firingRateVariance);
 
